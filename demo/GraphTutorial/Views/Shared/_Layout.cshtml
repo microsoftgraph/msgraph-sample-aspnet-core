@@ -1,4 +1,8 @@
-﻿@{
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved.
+     Licensed under the MIT License. -->
+
+<!-- <LayoutSnippet> -->
+@{
     string controller = $"{ViewContext.RouteData.Values["controller"]}";
 }
 
@@ -39,6 +43,7 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            <partial name="_AlertPartial"/>
             @RenderBody()
         </main>
     </div>
@@ -54,3 +59,4 @@
     @RenderSection("Scripts", required: false)
 </body>
 </html>
+<!-- </LayoutSnippet> -->
