@@ -13,6 +13,13 @@ public static class AlertExtensions
         return Alert(result, "danger", message, debugInfo);
     }
 
+    public static IActionResult WithSuccess(this IActionResult result,
+                                         string message,
+                                         string debugInfo = null)
+    {
+        return Alert(result, "success", message, debugInfo);
+    }
+
     public static IActionResult WithInfo(this IActionResult result,
                                          string message,
                                          string debugInfo = null)
