@@ -1,28 +1,35 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using GraphTutorial.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using GraphTutorial.Models;
+using Microsoft.Identity.Web;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace GraphTutorial.Controllers
 {
     public class HomeController : Controller
     {
+        ITokenAcquisition _tokenAcquisition;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(
+            ITokenAcquisition tokenAcquisition,
+            ILogger<HomeController> logger)
         {
+            _tokenAcquisition = tokenAcquisition;
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            // TEMPORARY
+            // Get the token and display it
+            string token = await _tokenAcquisition
+                .GetAccessTokenForUserAsync(GraphConstants.Scopes);
+            return View().WithInfo("Token acquired", token);
         }
 
         public IActionResult Privacy()
@@ -34,6 +41,13 @@ namespace GraphTutorial.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [AllowAnonymous]
+        public IActionResult ErrorWithMessage(string message, string debug)
+        {
+            return View("Index").WithError(message, debug);
         }
     }
 }
