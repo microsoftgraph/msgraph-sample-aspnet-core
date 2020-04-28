@@ -12,11 +12,7 @@ using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace GraphTutorial
@@ -36,7 +32,75 @@ namespace GraphTutorial
             //services.AddOptions();
 
             // Add Microsoft Identity Platform sign-in
-            services.AddSignIn(Configuration);
+            // <AddSignInSnippet>
+            services.AddSignIn(options =>
+            {
+                Configuration.Bind("AzureAd", options);
+
+                var authCodeHandler = options.Events.OnAuthorizationCodeReceived;
+                options.Events.OnAuthorizationCodeReceived = async context => {
+                    // Invoke the original handler first
+                    // This allows the Microsoft.Identity.Web library to
+                    // add the user to its token cache
+                    await authCodeHandler(context);
+
+                    var tokenAcquisition = context.HttpContext.RequestServices
+                        .GetRequiredService<ITokenAcquisition>() as ITokenAcquisition;
+
+                    var graphClient = GraphServiceClientFactory
+                        .GetAuthenticatedGraphClient(async () =>
+                        {
+                            return await tokenAcquisition
+                                .GetAccessTokenForUserAsync(GraphConstants.Scopes);
+                        }
+                    );
+
+                    // Get user information from Graph
+                    var user = await graphClient.Me.Request()
+                        .Select(u => new {
+                            u.DisplayName,
+                            u.Mail,
+                            u.UserPrincipalName,
+                            u.MailboxSettings
+                        })
+                        .GetAsync();
+
+                    // Get the user's photo
+                    var photo = await graphClient.Me
+                        .Photos["48x48"]
+                        .Content
+                        .Request()
+                        .GetAsync();
+
+                    context.Principal.AddUserGraphInfo(user);
+                    context.Principal.AddUserGraphPhoto(photo);
+                };
+
+                options.Events.OnAuthenticationFailed = context => {
+                    var error = WebUtility.UrlEncode(context.Exception.Message);
+                    context.Response
+                        .Redirect($"/Home/ErrorWithMessage?message=Authentication+error&debug={error}");
+                    context.HandleResponse();
+
+                    return Task.FromResult(0);
+                };
+
+                options.Events.OnRemoteFailure = context => {
+                    if (context.Failure is OpenIdConnectProtocolException)
+                    {
+                        var error = WebUtility.UrlEncode(context.Failure.Message);
+                        context.Response
+                            .Redirect($"/Home/ErrorWithMessage?message=Sign+in+error&debug={error}");
+                        context.HandleResponse();
+                    }
+
+                    return Task.FromResult(0);
+                };
+            }, options =>
+            {
+                Configuration.Bind("AzureAd", options);
+            });
+            // </AddSignInSnippet>
 
             // Add ability to call web API (Graph)
             // and get access tokens

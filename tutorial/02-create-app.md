@@ -74,7 +74,7 @@ In this section you will create extension methods for the `ClaimsPrincipal` clas
             public const string Email = "graph_email";
             public const string Photo = "graph_photo";
             public const string TimeZone = "graph_timezone";
-            public const string TimeFormat = "graph_timeformat";
+            public const string DateTimeFormat = "graph_datetimeformat";
         }
 
         // Helper methods to access Graph user data stored in
@@ -94,16 +94,6 @@ In this section you will create extension methods for the `ClaimsPrincipal` clas
             public static string GetUserGraphPhoto(this ClaimsPrincipal claimsPrincipal)
             {
                 return "/img/no-profile-photo.png";
-            }
-
-            public static string GetUserGraphTimeZone(this ClaimsPrincipal claimsPrincipal)
-            {
-                return "";
-            }
-
-            public static string GetUserGraphTimeFormat(this ClaimsPrincipal claimsPrincipal)
-            {
-                return "";
             }
         }
     }
