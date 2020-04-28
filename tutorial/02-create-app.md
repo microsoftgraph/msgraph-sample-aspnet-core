@@ -123,6 +123,11 @@ In this section you will implement the Razor views for the application.
 
     :::code language="cshtml" source="../demo/GraphTutorial/Views/Home/Index.cshtml" id="HomeIndexSnippet":::
 
+1. Create a new directory in the **./wwwroot** directory named **img**. Add an image file of your choosing named **no-profile-photo.png** in this directory. This image will be used as the user's photo when the user has no photo in Microsoft Graph.
+
+    > [!TIP]
+    > You can download the image used in these screenshots from [GitHub](https://github.com/microsoftgraph/msgraph-training-aspnet-core/blob/master/demo/wwwroot/img/no-profile-photo.png).
+
 1. Save all of your changes and restart the server. Now, the app should look very different.
 
     ![A screenshot of the redesigned home page](./images/create-app-01.png)

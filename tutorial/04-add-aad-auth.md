@@ -34,6 +34,7 @@ Start by adding the Microsoft Identity platform services to the application.
     using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
     using Microsoft.Identity.Web.UI;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+    using Microsoft.Graph;
     using System.Net;
     ```
 

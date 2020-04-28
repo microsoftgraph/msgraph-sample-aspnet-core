@@ -12,6 +12,7 @@ using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.Graph;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -36,6 +37,8 @@ namespace GraphTutorial
             services.AddSignIn(options =>
             {
                 Configuration.Bind("AzureAd", options);
+
+                options.Prompt = "select_account";
 
                 var authCodeHandler = options.Events.OnAuthorizationCodeReceived;
                 options.Events.OnAuthorizationCodeReceived = async context => {
@@ -65,15 +68,31 @@ namespace GraphTutorial
                         })
                         .GetAsync();
 
-                    // Get the user's photo
-                    var photo = await graphClient.Me
-                        .Photos["48x48"]
-                        .Content
-                        .Request()
-                        .GetAsync();
-
                     context.Principal.AddUserGraphInfo(user);
-                    context.Principal.AddUserGraphPhoto(photo);
+
+                    // Get the user's photo
+                    // If the user doesn't have a photo, this throws
+                    try
+                    {
+                        var photo = await graphClient.Me
+                            .Photos["48x48"]
+                            .Content
+                            .Request()
+                            .GetAsync();
+
+                        context.Principal.AddUserGraphPhoto(photo);
+                    }
+                    catch (ServiceException ex)
+                    {
+                        if (ex.IsMatch("ErrorItemNotFound"))
+                        {
+                            context.Principal.AddUserGraphPhoto(null);
+                        }
+                        else
+                        {
+                            throw ex;
+                        }
+                    }
                 };
 
                 options.Events.OnAuthenticationFailed = context => {

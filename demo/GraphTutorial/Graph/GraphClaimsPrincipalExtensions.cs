@@ -68,6 +68,14 @@ namespace GraphTutorial
         {
             var identity = claimsPrincipal.Identity as ClaimsIdentity;
 
+            if (photoStream == null)
+            {
+                // Add the default profile photo
+                identity.AddClaim(
+                    new Claim(GraphClaimTypes.Photo, "/img/no-profile-photo.png"));
+                return;
+            }
+
             // Copy the photo stream to a memory stream
             // to get the bytes out of it
             var memoryStream = new MemoryStream();
