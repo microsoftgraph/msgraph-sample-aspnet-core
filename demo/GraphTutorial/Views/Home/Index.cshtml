@@ -6,14 +6,14 @@
     ViewData["Title"] = "Home Page";
 }
 
-@using Microsoft.Identity.Web
+@using GraphTutorial
 
 <div class="jumbotron">
     <h1>ASP.NET Core Graph Tutorial</h1>
     <p class="lead">This sample app shows how to use the Microsoft Graph API to access a user's data from ASP.NET Core</p>
     @if (User.Identity.IsAuthenticated)
     {
-        <h4>Welcome @User.GetDisplayName()!</h4>
+        <h4>Welcome @User.GetUserGraphDisplayName()!</h4>
         <p>Use the navigation bar at the top of the page to get started.</p>
     }
     else
