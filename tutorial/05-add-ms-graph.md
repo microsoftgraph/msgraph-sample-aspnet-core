@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD002 MD041 -->
 
-In this demo you will incorporate Microsoft Graph into the application. For this application, you will use the [Microsoft Graph Client Library for .NET](https://github.com/microsoftgraph/msgraph-sdk-dotnet) to make calls to Microsoft Graph.
+In this section you will incorporate Microsoft Graph into the application. For this application, you will use the [Microsoft Graph Client Library for .NET](https://github.com/microsoftgraph/msgraph-sdk-dotnet) to make calls to Microsoft Graph.
 
 ## Get calendar events from Outlook
 

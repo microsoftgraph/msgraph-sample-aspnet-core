@@ -8,7 +8,10 @@
     ViewData["Title"] = "Calendar";
 }
 
-<h1 class="mb-3">@Model.TimeSpan()</h1>
+<div class="mb-3">
+  <h1 class="mb-3">@Model.TimeSpan()</h1>
+  <a class="btn btn-light btn-sm" asp-controller="Calendar" asp-action="New">New event</a>
+</div>
 <div class="calendar-week">
   <div class="table-responsive">
     <table class="table table-sm">

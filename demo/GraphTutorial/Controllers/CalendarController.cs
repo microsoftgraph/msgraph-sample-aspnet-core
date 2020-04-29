@@ -60,6 +60,100 @@ namespace GraphTutorial.Controllers
         }
         // </IndexSnippet>
 
+        // <CalendarNewGetSnippet>
+        // Minimum permission scope needed for this view
+        [AuthorizeForScopes(Scopes = new[] { "Calendars.ReadWrite" })]
+        public IActionResult New()
+        {
+            return View();
+        }
+        // </CalendarNewGetSnippet>
+
+        // <CalendarNewPostSnippet>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AuthorizeForScopes(Scopes = new[] { "Calendars.ReadWrite" })]
+        public async Task<IActionResult> New([Bind("Subject,Attendees,Start,End,Body")] NewEvent newEvent)
+        {
+            var timeZone = User.GetUserGraphTimeZone();
+
+            // Create a Graph event with the required fields
+            var graphEvent = new Event
+            {
+                Subject = newEvent.Subject,
+                Start = new DateTimeTimeZone
+                {
+                    DateTime = newEvent.Start.ToString("o"),
+                    // Use the user's time zone
+                    TimeZone = timeZone
+                },
+                End = new DateTimeTimeZone
+                {
+                    DateTime = newEvent.End.ToString("o"),
+                    // Use the user's time zone
+                    TimeZone = timeZone
+                }
+            };
+
+            // Add body if present
+            if (!string.IsNullOrEmpty(newEvent.Body))
+            {
+                graphEvent.Body = new ItemBody
+                {
+                    ContentType = BodyType.Text,
+                    Content = newEvent.Body
+                };
+            }
+
+            // Add attendees if present
+            if (!string.IsNullOrEmpty(newEvent.Attendees))
+            {
+                var attendees =
+                    newEvent.Attendees.Split(';', StringSplitOptions.RemoveEmptyEntries);
+
+                if (attendees.Length > 0)
+                {
+                    var attendeeList = new List<Attendee>();
+                    foreach (var attendee in attendees)
+                    {
+                        attendeeList.Add(new Attendee{
+                            EmailAddress = new EmailAddress
+                            {
+                                Address = attendee
+                            },
+                            Type = AttendeeType.Required
+                        });
+                    }
+                }
+            }
+
+            var graphClient = GraphServiceClientFactory
+                .GetAuthenticatedGraphClient(async () =>
+                {
+                    return await _tokenAcquisition
+                        .GetAccessTokenForUserAsync(GraphConstants.Scopes);
+                }
+            );
+
+            try
+            {
+                // Add the event
+                await graphClient.Me.Events
+                    .Request()
+                    .AddAsync(graphEvent);
+
+                // Redirect to the calendar view with a success message
+                return RedirectToAction("Index").WithSuccess("Event created");
+            }
+            catch (ServiceException ex)
+            {
+                // Redirect to the calendar view with an error message
+                return RedirectToAction("Index")
+                    .WithError("Error creating event", ex.Error.Message);
+            }
+        }
+        // </CalendarNewPostSnippet>
+
 // <SecondSnippet>
         private async Task<IList<Event>> GetUserWeekCalendar(DateTime startOfWeek)
         {
