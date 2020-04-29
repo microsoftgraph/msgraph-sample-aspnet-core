@@ -14,7 +14,7 @@ namespace GraphTutorial
         public const string Email = "graph_email";
         public const string Photo = "graph_photo";
         public const string TimeZone = "graph_timezone";
-        public const string DateTimeFormat = "graph_datetimeformat";
+        public const string TimeFormat = "graph_timeformat";
     }
 
     // Helper methods to access Graph user data stored in
@@ -41,9 +41,9 @@ namespace GraphTutorial
             return claimsPrincipal.FindFirstValue(GraphClaimTypes.TimeZone);
         }
 
-        public static string GetUserGraphDateTimeFormat(this ClaimsPrincipal claimsPrincipal)
+        public static string GetUserGraphTimeFormat(this ClaimsPrincipal claimsPrincipal)
         {
-            return claimsPrincipal.FindFirstValue(GraphClaimTypes.DateTimeFormat);
+            return claimsPrincipal.FindFirstValue(GraphClaimTypes.TimeFormat);
         }
 
         public static void AddUserGraphInfo(this ClaimsPrincipal claimsPrincipal, User user)
@@ -58,10 +58,8 @@ namespace GraphTutorial
             identity.AddClaim(
                 new Claim(GraphClaimTypes.TimeZone,
                     user.MailboxSettings.TimeZone));
-            var dateTimeFormat =
-                $"{user.MailboxSettings.DateFormat} {user.MailboxSettings.TimeFormat}";
             identity.AddClaim(
-                new Claim(GraphClaimTypes.DateTimeFormat, dateTimeFormat));
+                new Claim(GraphClaimTypes.TimeFormat, user.MailboxSettings.TimeFormat));
         }
 
         public static void AddUserGraphPhoto(this ClaimsPrincipal claimsPrincipal, Stream photoStream)

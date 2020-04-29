@@ -2,8 +2,10 @@
 // Licensed under the MIT license.
 
 // <UsingSnippet>
+using GraphTutorial.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
 using Microsoft.Graph;
 using System;
@@ -32,29 +34,34 @@ namespace GraphTutorial.Controllers
         [AuthorizeForScopes(Scopes = new[] { "Calendars.Read" })]
         public async Task<IActionResult> Index()
         {
-            var events = await GetUserWeekCalendar();
+            try
+            {
+                var userTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
+                    User.GetUserGraphTimeZone());
+                var startOfWeek = CalendarController.GetUtcStartOfWeekInTimeZone(
+                    DateTime.Today, userTimeZone);
 
-            // TEMPORARY
-            // Create a Graph client just to access its
-            // serializer
-            var graphClient = GraphServiceClientFactory
-                .GetAuthenticatedGraphClient(async () =>
+                var events = await GetUserWeekCalendar(startOfWeek);
+
+                var model = new CalendarViewModel(startOfWeek, events);
+
+                return View(model);
+            }
+            catch (ServiceException ex)
+            {
+                if (ex.InnerException is MsalUiRequiredException)
                 {
-                    return await _tokenAcquisition
-                        .GetAccessTokenForUserAsync(GraphConstants.Scopes);
+                    throw ex;
                 }
-            );
 
-            // Return a JSON dump of events
-            return new ContentResult {
-                Content = graphClient.HttpProvider.Serializer.SerializeObject(events),
-                ContentType = "application/json"
-            };
+                return View(new CalendarViewModel())
+                    .WithError("Error getting calendar view", ex.Message);
+            }
         }
         // </IndexSnippet>
 
 // <SecondSnippet>
-        private async Task<IList<Event>> GetUserWeekCalendar()
+        private async Task<IList<Event>> GetUserWeekCalendar(DateTime startOfWeek)
         {
             var graphClient = GraphServiceClientFactory
                 .GetAuthenticatedGraphClient(async () =>
@@ -65,11 +72,6 @@ namespace GraphTutorial.Controllers
             );
 
             // Configure a calendar view for the current week
-            var userTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
-                User.GetUserGraphTimeZone());
-
-            var startOfWeek = CalendarController.GetUtcStartOfWeekInTimeZone(
-                DateTime.Today, userTimeZone);
             var endOfWeek = startOfWeek.AddDays(7);
 
             var viewOptions = new List<QueryOption>

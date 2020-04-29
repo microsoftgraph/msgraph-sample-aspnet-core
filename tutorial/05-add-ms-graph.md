@@ -26,7 +26,25 @@ Start by creating a new controller for calendar views.
     [AuthorizeForScopes(Scopes = new[] { "Calendars.Read" })]
     public async Task<IActionResult> Index()
     {
-        var events = await GetUserWeekCalendar();
+        try
+        {
+            var userTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
+                User.GetUserGraphTimeZone());
+            var startOfWeek = CalendarController.GetUtcStartOfWeekInTimeZone(
+                DateTime.Today, userTimeZone);
+
+            var events = await GetUserWeekCalendar();
+        }
+        catch (ServiceException ex)
+        {
+            if (ex.InnerException is MsalUiRequiredException)
+            {
+                throw ex;
+            }
+
+            return View(new CalendarViewModel())
+                .WithError("Error getting calendar view", ex.Message);
+        }
 
         // TEMPORARY
         // Create a Graph client just to access its
@@ -53,46 +71,37 @@ Start by creating a new controller for calendar views.
 
 Now you can add a view to display the results in a more user-friendly manner.
 
-1. In Solution Explorer, right-click the **Views/Calendar** folder and select **Add > View...**. Name the view `Index` and select **Add**. Replace the entire contents of the new file with the following code.
+### Create view models
 
-    ```html
-    @model IEnumerable<Microsoft.Graph.Event>
+1. Create a new file named **CalendarViewEvent.cs** in the **./Models** directory and add the following code.
 
-    @{
-        ViewBag.Current = "Calendar";
-    }
+    :::code language="csharp" source="../demo/GraphTutorial/Models/CalendarViewEvent.cs" id="CalendarViewEventSnippet":::
 
-    <h1>Calendar</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Organizer</th>
-                <th scope="col">Subject</th>
-                <th scope="col">Start</th>
-                <th scope="col">End</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.Organizer.EmailAddress.Name</td>
-                    <td>@item.Subject</td>
-                    <td>@Convert.ToDateTime(item.Start.DateTime).ToString("M/d/yy h:mm tt")</td>
-                    <td>@Convert.ToDateTime(item.End.DateTime).ToString("M/d/yy h:mm tt")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    ```
+1. Create a new file named **DailyViewModel.cs** in the **./Models** directory and add the following code.
 
-    That will loop through a collection of events and add a table row for each one.
+    :::code language="csharp" source="../demo/GraphTutorial/Models/DailyViewModel.cs" id="DailyViewModelSnippet":::
 
-1. Remove the `return Json(events, JsonRequestBehavior.AllowGet);` line from the `Index` function in `Controllers/CalendarController.cs`, and replace it with the following code.
+1. Create a new file named **CalendarViewModel.cs** in the **./Models** directory and add the following code.
 
-    ```cs
-    return View(events);
-    ```
+    :::code language="csharp" source="../demo/GraphTutorial/Models/CalendarViewModel.cs" id="CalendarViewModelSnippet":::
+
+### Create views
+
+1. Create a new directory named **Calendar** in the **./Views** directory.
+
+1. Create a new file named **_DailyEventsPartial.cshtml** in the **./Views/Calendar** directory and add the following code.
+
+    :::code language="cshtml" source="../demo/GraphTutorial/Views/Calendar/_DailyEventsPartial.cshtml" id="DailyEventsPartialSnippet":::
+
+1. Create a new file named **Index.cshtml** in the **./Views/Calendar** directory and add the following code.
+
+    :::code language="cshtml" source="../demo/GraphTutorial/Views/Calendar/Index.cshtml" id="CalendarIndexSnippet":::
+
+### Update calendar controller
+
+1. Open **./Controllers/CalendarController.cs** and replace the existing `Index` function with the following.
+
+    :::code language="csharp" source="../demo/GraphTutorial/Controllers/CalendarController.cs" id="IndexSnippet":::
 
 1. Start the app, sign in, and click the **Calendar** link. The app should now render a table of events.
 
