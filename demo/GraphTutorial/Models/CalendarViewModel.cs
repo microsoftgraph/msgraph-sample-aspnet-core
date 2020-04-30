@@ -34,11 +34,14 @@ namespace GraphTutorial.Models
             }
         }
 
+        // Get the start - end dates of the week
         public string TimeSpan()
         {
             return $"{_startOfWeek.ToString("MMMM d, yyyy")} - {_startOfWeek.AddDays(6).ToString("MMMM d, yyyy")}";
         }
 
+        // Property accessors to pass to the daily view partial
+        // These properties get all events on the specific day
         public DailyViewModel Sunday
         {
             get

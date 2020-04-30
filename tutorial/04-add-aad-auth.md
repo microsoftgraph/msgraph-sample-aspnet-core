@@ -92,6 +92,8 @@ Start by adding the Microsoft Identity platform services to the application.
             ITokenAcquisition _tokenAcquisition;
             private readonly ILogger<HomeController> _logger;
 
+            // Get the ITokenAcquisition interface via
+            // dependency injection
             public HomeController(
                 ITokenAcquisition tokenAcquisition,
                 ILogger<HomeController> logger)

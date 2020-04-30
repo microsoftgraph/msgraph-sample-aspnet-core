@@ -64,7 +64,24 @@ Start by creating a new controller for calendar views.
             var startOfWeek = CalendarController.GetUtcStartOfWeekInTimeZone(
                 DateTime.Today, userTimeZone);
 
-            var events = await GetUserWeekCalendar();
+            var events = await GetUserWeekCalendar(startOfWeek);
+
+            // TEMPORARY
+            // Create a Graph client just to access its
+            // serializer
+            var graphClient = GraphServiceClientFactory
+                .GetAuthenticatedGraphClient(async () =>
+                {
+                    return await _tokenAcquisition
+                        .GetAccessTokenForUserAsync(GraphConstants.Scopes);
+                }
+            );
+
+            // Return a JSON dump of events
+            return new ContentResult {
+                Content = graphClient.HttpProvider.Serializer.SerializeObject(events),
+                ContentType = "application/json"
+            };
         }
         catch (ServiceException ex)
         {
@@ -73,26 +90,11 @@ Start by creating a new controller for calendar views.
                 throw ex;
             }
 
-            return View(new CalendarViewModel())
-                .WithError("Error getting calendar view", ex.Message);
-        }
-
-        // TEMPORARY
-        // Create a Graph client just to access its
-        // serializer
-        var graphClient = GraphServiceClientFactory
-            .GetAuthenticatedGraphClient(async () =>
-            {
-                return await _tokenAcquisition
-                    .GetAccessTokenForUserAsync(GraphConstants.Scopes);
+            return new ContentResult {
+                Content = $"Error getting calendar view: {ex.Message}",
+                ContentType = "text/plain"
             }
-        );
-
-        // Return a JSON dump of events
-        return new ContentResult {
-            Content = graphClient.HttpProvider.Serializer.SerializeObject(events),
-            ContentType = "application/json"
-        };
+        }
     }
     ```
 
