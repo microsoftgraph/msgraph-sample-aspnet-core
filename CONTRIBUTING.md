@@ -30,6 +30,14 @@ If you update code between these "marker" comments, the Markdown files will auto
 
 While the enthusiasm is appreciated, please don't send pull requests to add new features to the sample. Because this repository is primarily a "build your first app" tutorial, the feature set is limited, by design.
 
+## Submitting pull requests
+
+Please submit all pull requests to the `master` branch.
+
+## When do changes get published?
+
+Publishing of updates to the [Microsoft Graph tutorials](https://docs.microsoft.com/graph/tutorials) site is not automatic. Changes must first be promoted to the `live` branch, then a build must be triggered by the site admins. This is typically done on an "as-needed" basis.
+
 ## Code of conduct
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
