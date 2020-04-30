@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-// <UsingSnippet>
 using GraphTutorial.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -26,8 +25,6 @@ namespace GraphTutorial.Controllers
             _tokenAcquisition = tokenAcquisition;
             _logger = logger;
         }
-
-// </UsingSnippet>
 
         // <IndexSnippet>
         // Minimum permission scope needed for this view
@@ -154,7 +151,7 @@ namespace GraphTutorial.Controllers
         }
         // </CalendarNewPostSnippet>
 
-// <SecondSnippet>
+        // <GetCalendarViewSnippet>
         private async Task<IList<Event>> GetUserWeekCalendar(DateTime startOfWeek)
         {
             var graphClient = GraphServiceClientFactory
@@ -230,6 +227,6 @@ namespace GraphTutorial.Controllers
             // convert to UTC
             return TimeZoneInfo.ConvertTimeToUtc(unspecifiedStart, timeZone);
         }
+        // </GetCalendarViewSnippet>
     }
 }
-// </SecondSnippet>

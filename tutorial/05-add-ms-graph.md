@@ -8,7 +8,38 @@ Start by creating a new controller for calendar views.
 
 1. Add a new file named **CalendarController.cs** in the **./Controllers** directory and add the following code.
 
-    :::code language="csharp" source="../demo/GraphTutorial/Controllers/CalendarController.cs" id="UsingSnippet,SecondSnippet":::
+    ```csharp
+    using GraphTutorial.Models;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Identity.Client;
+    using Microsoft.Identity.Web;
+    using Microsoft.Graph;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
+    namespace GraphTutorial.Controllers
+    {
+        public class CalendarController : Controller
+        {
+            private readonly ITokenAcquisition _tokenAcquisition;
+            private readonly ILogger<HomeController> _logger;
+
+            public CalendarController(
+                ITokenAcquisition tokenAcquisition,
+                ILogger<HomeController> logger)
+            {
+                _tokenAcquisition = tokenAcquisition;
+                _logger = logger;
+            }
+        }
+    }
+    ```
+
+1. Add the following functions to the `CalendarController` class to get the user's calendar view.
+
+    :::code language="csharp" source="../demo/GraphTutorial/Controllers/CalendarController.cs" id="GetCalendarViewSnippet":::
 
     Consider what the code in `GetUserWeekCalendar` does.
 
