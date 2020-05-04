@@ -93,7 +93,7 @@ Start by creating a new controller for calendar views.
             return new ContentResult {
                 Content = $"Error getting calendar view: {ex.Message}",
                 ContentType = "text/plain"
-            }
+            };
         }
     }
     ```
