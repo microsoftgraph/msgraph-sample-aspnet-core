@@ -16,8 +16,8 @@ Start by creating an ASP.NET Core web app.
 
 1. Open your browser and browse to `https://localhost:5001`. If everything is working, you should see a default ASP.NET Core page.
 
-> [!TIP]
-> You can use any text editor to edit the source files for this tutorial. However, [Visual Studio Code](https://code.visualstudio.com/) provides additional features, such as debugging and Intellisense.
+> [!IMPORTANT]
+> If you receive a warning that the certificate for **localhost** is un-trusted you can use the .NET Core CLI to install and trust the development certificate. See [Enforce HTTPS in ASP.NET Core](/aspnet/core/security/enforcing-ssl?view=aspnetcore-3.1) for instructions for specific operating systems.
 
 ## Add NuGet packages
 
@@ -42,6 +42,9 @@ In this section you will create the basic UI structure of the application.
 ### Implement alert extension methods
 
 In this section you will create extension methods for the `IActionResult` type returned by controller views. This extension will enable passing temporary error or success messages to the view.
+
+> [!TIP]
+> You can use any text editor to edit the source files for this tutorial. However, [Visual Studio Code](https://code.visualstudio.com/) provides additional features, such as debugging and Intellisense.
 
 1. Create a new directory in the **GraphTutorial** directory named **Alerts**.
 
@@ -128,6 +131,6 @@ In this section you will implement the Razor views for the application.
     > [!TIP]
     > You can download the image used in these screenshots from [GitHub](https://github.com/microsoftgraph/msgraph-training-aspnet-core/blob/master/demo/GraphTutorial/wwwroot/img/no-profile-photo.png).
 
-1. Save all of your changes and restart the server. Now, the app should look very different.
+1. Save all of your changes and restart the server (`dotnet run`). Now, the app should look very different.
 
     ![A screenshot of the redesigned home page](./images/create-app-01.png)
