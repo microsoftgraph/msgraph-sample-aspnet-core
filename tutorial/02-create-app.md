@@ -19,6 +19,9 @@ Start by creating an ASP.NET Core web app.
 > [!TIP]
 > You can use any text editor to edit the source files for this tutorial. However, [Visual Studio Code](https://code.visualstudio.com/) provides additional features, such as debugging and Intellisense.
 
+> [!NOTE]
+> If you receive a warning that the certificate for **localhost** is untrusted you can safely continue to the website.
+
 ## Add NuGet packages
 
 Before moving on, install some additional NuGet packages that you will use later.
@@ -128,6 +131,6 @@ In this section you will implement the Razor views for the application.
     > [!TIP]
     > You can download the image used in these screenshots from [GitHub](https://github.com/microsoftgraph/msgraph-training-aspnet-core/blob/master/demo/GraphTutorial/wwwroot/img/no-profile-photo.png).
 
-1. Save all of your changes and restart the server. Now, the app should look very different.
+1. Save all of your changes and restart the server (`dotnet run`). Now, the app should look very different.
 
     ![A screenshot of the redesigned home page](./images/create-app-01.png)
