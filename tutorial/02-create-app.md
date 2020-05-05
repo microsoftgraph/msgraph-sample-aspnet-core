@@ -16,11 +16,8 @@ Start by creating an ASP.NET Core web app.
 
 1. Open your browser and browse to `https://localhost:5001`. If everything is working, you should see a default ASP.NET Core page.
 
-> [!TIP]
-> You can use any text editor to edit the source files for this tutorial. However, [Visual Studio Code](https://code.visualstudio.com/) provides additional features, such as debugging and Intellisense.
-
-> [!NOTE]
-> If you receive a warning that the certificate for **localhost** is untrusted you can safely continue to the website.
+> [!IMPORTANT]
+> If you receive a warning that the certificate for **localhost** is un-trusted you can use the .NET Core CLI to install and trust the development certificate. See [Enforce HTTPS in ASP.NET Core](/aspnet/core/security/enforcing-ssl?view=aspnetcore-3.1) for instructions for specific operating systems.
 
 ## Add NuGet packages
 
@@ -45,6 +42,9 @@ In this section you will create the basic UI structure of the application.
 ### Implement alert extension methods
 
 In this section you will create extension methods for the `IActionResult` type returned by controller views. This extension will enable passing temporary error or success messages to the view.
+
+> [!TIP]
+> You can use any text editor to edit the source files for this tutorial. However, [Visual Studio Code](https://code.visualstudio.com/) provides additional features, such as debugging and Intellisense.
 
 1. Create a new directory in the **GraphTutorial** directory named **Alerts**.
 
