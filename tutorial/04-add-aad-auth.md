@@ -139,7 +139,20 @@ Start by adding the Microsoft Identity platform services to the application.
     }
     ```
 
-1. Save your changes and start the project. Login with your Microsoft account and consent to the requested permissions. The browser redirects to the app, showing the token.
+1. Save your changes and start the project. Login with your Microsoft account.
+
+1. Examine the consent prompt. The list of permissions correspond to list of permissions scopes configured in **./Graph/GraphConstants.cs**.
+
+    - **Maintain access to data you have given it access to:** (`offline_access`) This permission is requested by MSAL in order to retrieve refresh tokens.
+    - **Sign you in and read your profile:** (`User.Read`) This permission allows the app to get the logged-in user's profile and profile photo.
+    - **Read your mailbox settings:** (`MailboxSettings.Read`) This permission allows the app to read the user's mailbox settings, including time zone and time format.
+    - **Have full access to your calendars:** (`Calendars.ReadWrite`) This permission allows the app to read events on the user's calendar, add new events, and modify existing ones.
+
+    ![A screenshot of the Microsoft identity platform consent prompt](./images/add-aad-auth-03.png)
+
+    For more information regarding consent, see [Understanding Azure AD application consent experiences](/azure/active-directory/develop/application-consent-experience).
+
+1. Consent to the requested permissions. The browser redirects to the app, showing the token.
 
 ### Get user details
 
