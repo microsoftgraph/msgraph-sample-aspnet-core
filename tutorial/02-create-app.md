@@ -30,8 +30,8 @@ Before moving on, install some additional NuGet packages that you will use later
 1. Run the following commands in your CLI to install the dependencies.
 
     ```Shell
-    dotnet add package Microsoft.Identity.Web --version 0.1.1-preview
-    dotnet add package Microsoft.Identity.Web.UI --version 0.1.1-preview
+    dotnet add package Microsoft.Identity.Web --version 0.1.3-preview
+    dotnet add package Microsoft.Identity.Web.UI --version 0.1.3-preview
     dotnet add package Microsoft.Graph --version 3.5.0
     ```
 
