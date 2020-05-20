@@ -32,7 +32,7 @@ Before moving on, install some additional NuGet packages that you will use later
     ```Shell
     dotnet add package Microsoft.Identity.Web --version 0.1.1-preview
     dotnet add package Microsoft.Identity.Web.UI --version 0.1.1-preview
-    dotnet add package Microsoft.Graph --version 3.3.0
+    dotnet add package Microsoft.Graph --version 3.5.0
     ```
 
 ## Design the app
