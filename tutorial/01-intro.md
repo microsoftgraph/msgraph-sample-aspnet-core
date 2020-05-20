@@ -3,9 +3,7 @@
 This tutorial teaches you how to build an ASP.NET Core web app that uses the Microsoft Graph API to retrieve calendar information for a user.
 
 > [!TIP]
-> If you prefer to just download the completed tutorial, you can download it in two ways.
->
-> - Download or clone the [GitHub repository](https://github.com/microsoftgraph/msgraph-training-aspnet-core).
+> If you prefer to just download the completed tutorial, you can download or clone the [GitHub repository](https://github.com/microsoftgraph/msgraph-training-aspnet-core). See the README file in the **demo** folder for instructions on configuring the app with an app ID and secret.
 
 ## Prerequisites
 
