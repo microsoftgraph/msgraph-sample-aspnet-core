@@ -28,14 +28,15 @@ Start by adding the Microsoft Identity platform services to the application.
 1. Open the **./Startup.cs** file and add the following `using` statements to the top of the file.
 
     ```csharp
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc.Authorization;
     using Microsoft.Identity.Web;
-    using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
     using Microsoft.Identity.Web.UI;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.Graph;
     using System.Net;
+    using System.Net.Http.Headers;
     ```
 
 1. Replace the existing `ConfigureServices` function with the following.
@@ -43,13 +44,16 @@ Start by adding the Microsoft Identity platform services to the application.
     ```csharp
     public void ConfigureServices(IServiceCollection services)
     {
-        // Add Microsoft Identity Platform sign-in
-        services.AddSignIn(Configuration);
-
-        // Add ability to call web API (Graph)
-        // and get access tokens
-        services.AddWebAppCallsProtectedWebApi(Configuration,
-            GraphConstants.Scopes)
+        services
+            // Use OpenId authentication
+            .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+            // Specify this is a web app and needs auth code flow
+            .AddMicrosoftIdentityWebApp(Configuration)
+            // Add ability to call web API (Graph)
+            // and get access tokens
+            .EnableTokenAcquisitionToCallDownstreamApi(options => {
+                Configuration.Bind("AzureAd", options);
+            }, GraphConstants.Scopes)
             // Use in-memory token cache
             // See https://github.com/AzureAD/microsoft-identity-web/wiki/token-cache-serialization
             .AddInMemoryTokenCaches();
@@ -80,7 +84,6 @@ Start by adding the Microsoft Identity platform services to the application.
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Identity.Client;
     using Microsoft.Identity.Web;
     using System.Diagnostics;
     using System.Threading.Tasks;
@@ -112,7 +115,7 @@ Start by adding the Microsoft Identity platform services to the application.
                         .GetAccessTokenForUserAsync(GraphConstants.Scopes);
                     return View().WithInfo("Token acquired", token);
                 }
-                catch (MsalUiRequiredException)
+                catch (MicrosoftIdentityWebChallengeUserException)
                 {
                     return Challenge();
                 }
@@ -158,15 +161,11 @@ Start by adding the Microsoft Identity platform services to the application.
 
 Once the user is logged in, you can get their information from Microsoft Graph.
 
-1. Create a new file named **GraphServiceClientFactory.cs** in the **./Graph** directory and add the following code.
-
-    :::code language="csharp" source="../demo/GraphTutorial/Graph/GraphServiceClientFactory.cs" id="GraphServiceClientFactorySnippet":::
-
 1. Open **./Graph/GraphClaimsPrincipalExtensions.cs** and replace its entire contents with the following.
 
     :::code language="csharp" source="../demo/GraphTutorial/Graph/GraphClaimsPrincipalExtensions.cs" id="GraphClaimsExtensionsSnippet":::
 
-1. Open **./Startup.cs** and replace the `services.AddSignIn(Configuration);` line with the following code.
+1. Open **./Startup.cs** and replace the existing `.AddMicrosoftIdentityWebApp(Configuration)` line with the following code.
 
     :::code language="csharp" source="../demo/GraphTutorial/Startup.cs" id="AddSignInSnippet":::
 
@@ -176,6 +175,12 @@ Once the user is logged in, you can get their information from Microsoft Graph.
     - It uses the `ITokenAcquisition` interface to get an access token.
     - It calls Microsoft Graph to get the user's profile and photo.
     - It adds the Graph information to the user's identity.
+
+1. Add the following function call after the `EnableTokenAcquisitionToCallDownstreamApi` call and before the `AddInMemoryTokenCaches` call.
+
+    :::code language="csharp" source="../demo/GraphTutorial/Startup.cs" id="AddGraphClientSnippet":::
+
+    This will make an authenticated **GraphServiceClient** available to controllers via dependency injection.
 
 1. Open **./Controllers/HomeController.cs** and replace the `Index` function with the following.
 
@@ -207,3 +212,5 @@ Because the app is using the Microsoft.Identity.Web library, you do not have to 
 The app uses the in-memory token cache, which is sufficient for apps that do not need to persist tokens when the app restarts. Production apps may instead use the [distributed cache options](https://github.com/AzureAD/microsoft-identity-web/wiki/token-cache-serialization) in the Microsoft.Identity.Web library.
 
 The `GetAccessTokenForUserAsync` method handles token expiration and refresh for you. It first checks the cached token, and if it is not expired, it returns it. If it is expired, it uses the cached refresh token to obtain a new one.
+
+The **GraphServiceClient** that controllers get via dependency injection will be pre-configured with an authentication provider that uses `GetAccessTokenForUserAsync` for you.

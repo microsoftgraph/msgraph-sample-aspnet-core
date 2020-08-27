@@ -14,6 +14,7 @@ using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Graph;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace GraphTutorial
@@ -30,15 +31,11 @@ namespace GraphTutorial
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddOptions();
-
-            //services
-            //    .AddMicrosoftIdentityWebAppAuthentication(Configuration, "", "", "", true)
-            //    .EnableTokenAcquisitionToCallDownstreamApi()
-            //    .AddInMemoryTokenCaches();
-
             services
+                // Use OpenId authentication
                 .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                // <AddSignInSnippet>
+                // Specify this is a web app and needs auth code flow
                 .AddMicrosoftIdentityWebApp(options => {
                     Configuration.Bind("AzureAd", options);
 
@@ -50,24 +47,19 @@ namespace GraphTutorial
                         // Invoke the original handler first
                         // This allows the Microsoft.Identity.Web library to
                         // add the user to its token cache
-
                         await authCodeHandler(context);
 
                         var tokenAcquisition = context.HttpContext.RequestServices
                             .GetRequiredService<ITokenAcquisition>();
 
-                        var tokenResult = await tokenAcquisition
-                            .GetAccessTokenForUserAsync(GraphConstants.Scopes, user: context.Principal);
-
-                        //var graphClient = GraphServiceClientFactory
-                        //    .GetAuthenticatedGraphClient(async () =>
-                        //    {
-                        //        return await tokenAcquisition
-                        //            .GetAccessTokenForUserAsync(GraphConstants.Scopes);
-                        //    }
-                        //);
-                        var graphClient = context.HttpContext.RequestServices
-                            .GetRequiredService<GraphServiceClient>();
+                        var graphClient = new GraphServiceClient(
+                            new DelegateAuthenticationProvider(async (request) => {
+                                var token = await tokenAcquisition
+                                    .GetAccessTokenForUserAsync(GraphConstants.Scopes, user:context.Principal);
+                                request.Headers.Authorization =
+                                    new AuthenticationHeaderValue("Bearer", token);
+                            })
+                        );
 
                         // Get user information from Graph
                         var user = await graphClient.Me.Request()
@@ -127,112 +119,22 @@ namespace GraphTutorial
                         return Task.FromResult(0);
                     };
                 })
+                // </AddSignInSnippet>
+                // Add ability to call web API (Graph)
+                // and get access tokens
                 .EnableTokenAcquisitionToCallDownstreamApi(options => {
                     Configuration.Bind("AzureAd", options);
                 }, GraphConstants.Scopes)
+                // <AddGraphClientSnippet>
+                // Add a GraphServiceClient via dependency injection
                 .AddMicrosoftGraph(options => {
                     options.Scopes = string.Join(' ', GraphConstants.Scopes);
                 })
-                .AddInMemoryTokenCaches();
-
-            // Add Microsoft Identity Platform sign-in
-            // <AddSignInSnippet>
-            /*
-            services.AddSignIn(options =>
-            {
-                Configuration.Bind("AzureAd", options);
-
-                options.Prompt = "select_account";
-
-                var authCodeHandler = options.Events.OnAuthorizationCodeReceived;
-                options.Events.OnAuthorizationCodeReceived = async context => {
-                    // Invoke the original handler first
-                    // This allows the Microsoft.Identity.Web library to
-                    // add the user to its token cache
-                    await authCodeHandler(context);
-
-                    var tokenAcquisition = context.HttpContext.RequestServices
-                        .GetRequiredService<ITokenAcquisition>() as ITokenAcquisition;
-
-                    var graphClient = GraphServiceClientFactory
-                        .GetAuthenticatedGraphClient(async () =>
-                        {
-                            return await tokenAcquisition
-                                .GetAccessTokenForUserAsync(GraphConstants.Scopes);
-                        }
-                    );
-
-                    // Get user information from Graph
-                    var user = await graphClient.Me.Request()
-                        .Select(u => new {
-                            u.DisplayName,
-                            u.Mail,
-                            u.UserPrincipalName,
-                            u.MailboxSettings
-                        })
-                        .GetAsync();
-
-                    context.Principal.AddUserGraphInfo(user);
-
-                    // Get the user's photo
-                    // If the user doesn't have a photo, this throws
-                    try
-                    {
-                        var photo = await graphClient.Me
-                            .Photos["48x48"]
-                            .Content
-                            .Request()
-                            .GetAsync();
-
-                        context.Principal.AddUserGraphPhoto(photo);
-                    }
-                    catch (ServiceException ex)
-                    {
-                        if (ex.IsMatch("ErrorItemNotFound"))
-                        {
-                            context.Principal.AddUserGraphPhoto(null);
-                        }
-                        else
-                        {
-                            throw ex;
-                        }
-                    }
-                };
-
-                options.Events.OnAuthenticationFailed = context => {
-                    var error = WebUtility.UrlEncode(context.Exception.Message);
-                    context.Response
-                        .Redirect($"/Home/ErrorWithMessage?message=Authentication+error&debug={error}");
-                    context.HandleResponse();
-
-                    return Task.FromResult(0);
-                };
-
-                options.Events.OnRemoteFailure = context => {
-                    if (context.Failure is OpenIdConnectProtocolException)
-                    {
-                        var error = WebUtility.UrlEncode(context.Failure.Message);
-                        context.Response
-                            .Redirect($"/Home/ErrorWithMessage?message=Sign+in+error&debug={error}");
-                        context.HandleResponse();
-                    }
-
-                    return Task.FromResult(0);
-                };
-            }, options =>
-            {
-                Configuration.Bind("AzureAd", options);
-            });
-            // </AddSignInSnippet>
-
-            // Add ability to call web API (Graph)
-            // and get access tokens
-            services.AddWebAppCallsProtectedWebApi(Configuration,
-                GraphConstants.Scopes)
+                // </AddGraphClientSnippet>
                 // Use in-memory token cache
                 // See https://github.com/AzureAD/microsoft-identity-web/wiki/token-cache-serialization
                 .AddInMemoryTokenCaches();
-            */
+
             // Require authentication
             services.AddControllersWithViews(options =>
             {
@@ -243,8 +145,6 @@ namespace GraphTutorial
             })
             // Add the Microsoft Identity UI pages for signin/out
             .AddMicrosoftIdentityUI();
-
-            //services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
