@@ -12,7 +12,6 @@ Start by creating a new controller for calendar views.
     using GraphTutorial.Models;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Identity.Client;
     using Microsoft.Identity.Web;
     using Microsoft.Graph;
     using System;
@@ -23,14 +22,14 @@ Start by creating a new controller for calendar views.
     {
         public class CalendarController : Controller
         {
-            private readonly ITokenAcquisition _tokenAcquisition;
+            private readonly GraphServiceClient _graphClient;
             private readonly ILogger<HomeController> _logger;
 
             public CalendarController(
-                ITokenAcquisition tokenAcquisition,
+                GraphServiceClient graphClient,
                 ILogger<HomeController> logger)
             {
-                _tokenAcquisition = tokenAcquisition;
+                _graphClient = graphClient;
                 _logger = logger;
             }
         }
@@ -66,26 +65,15 @@ Start by creating a new controller for calendar views.
 
             var events = await GetUserWeekCalendar(startOfWeek);
 
-            // TEMPORARY
-            // Create a Graph client just to access its
-            // serializer
-            var graphClient = GraphServiceClientFactory
-                .GetAuthenticatedGraphClient(async () =>
-                {
-                    return await _tokenAcquisition
-                        .GetAccessTokenForUserAsync(GraphConstants.Scopes);
-                }
-            );
-
             // Return a JSON dump of events
             return new ContentResult {
-                Content = graphClient.HttpProvider.Serializer.SerializeObject(events),
+                Content = _graphClient.HttpProvider.Serializer.SerializeObject(events),
                 ContentType = "application/json"
             };
         }
         catch (ServiceException ex)
         {
-            if (ex.InnerException is MsalUiRequiredException)
+            if (ex.InnerException is MicrosoftIdentityWebChallengeUserException)
             {
                 throw ex;
             }

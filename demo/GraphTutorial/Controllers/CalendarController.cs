@@ -4,7 +4,6 @@
 using GraphTutorial.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
 using Microsoft.Graph;
 using System;
@@ -15,14 +14,14 @@ namespace GraphTutorial.Controllers
 {
     public class CalendarController : Controller
     {
-        private readonly ITokenAcquisition _tokenAcquisition;
+        private readonly GraphServiceClient _graphClient;
         private readonly ILogger<HomeController> _logger;
 
         public CalendarController(
-            ITokenAcquisition tokenAcquisition,
+            GraphServiceClient graphClient,
             ILogger<HomeController> logger)
         {
-            _tokenAcquisition = tokenAcquisition;
+            _graphClient = graphClient;
             _logger = logger;
         }
 
@@ -46,7 +45,7 @@ namespace GraphTutorial.Controllers
             }
             catch (ServiceException ex)
             {
-                if (ex.InnerException is MsalUiRequiredException)
+                if (ex.InnerException is MicrosoftIdentityWebChallengeUserException)
                 {
                     throw ex;
                 }
@@ -124,18 +123,10 @@ namespace GraphTutorial.Controllers
                 }
             }
 
-            var graphClient = GraphServiceClientFactory
-                .GetAuthenticatedGraphClient(async () =>
-                {
-                    return await _tokenAcquisition
-                        .GetAccessTokenForUserAsync(GraphConstants.Scopes);
-                }
-            );
-
             try
             {
                 // Add the event
-                await graphClient.Me.Events
+                await _graphClient.Me.Events
                     .Request()
                     .AddAsync(graphEvent);
 
@@ -154,14 +145,6 @@ namespace GraphTutorial.Controllers
         // <GetCalendarViewSnippet>
         private async Task<IList<Event>> GetUserWeekCalendar(DateTime startOfWeek)
         {
-            var graphClient = GraphServiceClientFactory
-                .GetAuthenticatedGraphClient(async () =>
-                {
-                    return await _tokenAcquisition
-                        .GetAccessTokenForUserAsync(GraphConstants.Scopes);
-                }
-            );
-
             // Configure a calendar view for the current week
             var endOfWeek = startOfWeek.AddDays(7);
 
@@ -171,7 +154,7 @@ namespace GraphTutorial.Controllers
                 new QueryOption("endDateTime", endOfWeek.ToString("o"))
             };
 
-            var events = await graphClient.Me
+            var events = await _graphClient.Me
                 .CalendarView
                 .Request(viewOptions)
                 // Send user time zone in request so date/time in
@@ -199,7 +182,7 @@ namespace GraphTutorial.Controllers
                 // Create a page iterator to iterate over subsequent pages
                 // of results. Build a list from the results
                 var pageIterator = PageIterator<Event>.CreatePageIterator(
-                    graphClient, events,
+                    _graphClient, events,
                     (e) => {
                         allEvents.Add(e);
                         return true;
