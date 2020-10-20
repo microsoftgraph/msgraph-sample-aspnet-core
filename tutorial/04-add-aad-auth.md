@@ -171,10 +171,10 @@ Once the user is logged in, you can get their information from Microsoft Graph.
 
     Consider what this code does.
 
-    - It adds an event handler for the `OnAuthorizationCodeReceived` event. This handler uses the default handler to exchange the authorization code for a token and initialize the Microsoft.Identity.Web classes.
-    - It uses the `ITokenAcquisition` interface to get an access token.
-    - It calls Microsoft Graph to get the user's profile and photo.
-    - It adds the Graph information to the user's identity.
+    - It adds an event handler for the `OnTokenValidated` event.
+        - It uses the `ITokenAcquisition` interface to get an access token.
+        - It calls Microsoft Graph to get the user's profile and photo.
+        - It adds the Graph information to the user's identity.
 
 1. Add the following function call after the `EnableTokenAcquisitionToCallDownstreamApi` call and before the `AddInMemoryTokenCaches` call.
 
