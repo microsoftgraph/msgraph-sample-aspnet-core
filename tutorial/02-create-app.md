@@ -27,6 +27,7 @@ Before moving on, install some additional NuGet packages that you will use later
 - [Microsoft.Identity.Web.MicrosoftGraph](https://www.nuget.org/packages/Microsoft.Identity.Web.MicrosoftGraph/) for adding the Microsoft Graph SDK via dependency injection.
 - [Microsoft.Identity.Web.UI](https://www.nuget.org/packages/Microsoft.Identity.Web.UI/) for sign-in and sign-out UI.
 - [Microsoft.Graph](https://www.nuget.org/packages/Microsoft.Graph/) for making calls to Microsoft Graph.
+- [TimeZoneConverter](https://github.com/mj1856/TimeZoneConverter) for handling time zoned identifiers cross-platform.
 
 1. Run the following commands in your CLI to install the dependencies.
 
@@ -35,6 +36,7 @@ Before moving on, install some additional NuGet packages that you will use later
     dotnet add package Microsoft.Identity.MicrosoftGraph --version 1.1.0
     dotnet add package Microsoft.Identity.Web.UI --version 1.1.0
     dotnet add package Microsoft.Graph --version 3.18.0
+    dotnet add package TimeZoneConverter
     ```
 
 ## Design the app

@@ -9,6 +9,7 @@ using Microsoft.Graph;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TimeZoneConverter;
 
 namespace GraphTutorial.Controllers
 {
@@ -32,7 +33,7 @@ namespace GraphTutorial.Controllers
         {
             try
             {
-                var userTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
+                var userTimeZone = TZConvert.GetTimeZoneInfo(
                     User.GetUserGraphTimeZone());
                 var startOfWeek = CalendarController.GetUtcStartOfWeekInTimeZone(
                     DateTime.Today, userTimeZone);

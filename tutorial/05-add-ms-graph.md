@@ -17,6 +17,7 @@ Start by creating a new controller for calendar views.
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using TimeZoneConverter;
 
     namespace GraphTutorial.Controllers
     {
@@ -58,7 +59,7 @@ Start by creating a new controller for calendar views.
     {
         try
         {
-            var userTimeZone = TimeZoneInfo.FindSystemTimeZoneById(
+            var userTimeZone = TZConvert.GetTimeZoneInfo(
                 User.GetUserGraphTimeZone());
             var startOfWeek = CalendarController.GetUtcStartOfWeekInTimeZone(
                 DateTime.Today, userTimeZone);
