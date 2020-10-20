@@ -41,14 +41,7 @@ namespace GraphTutorial
 
                     options.Prompt = "select_account";
 
-                    var authCodeHandler = options.Events.OnAuthorizationCodeReceived;
-
-                    options.Events.OnAuthorizationCodeReceived += async context => {
-                        // Invoke the original handler first
-                        // This allows the Microsoft.Identity.Web library to
-                        // add the user to its token cache
-                        await authCodeHandler(context);
-
+                    options.Events.OnTokenValidated = async context => {
                         var tokenAcquisition = context.HttpContext.RequestServices
                             .GetRequiredService<ITokenAcquisition>();
 

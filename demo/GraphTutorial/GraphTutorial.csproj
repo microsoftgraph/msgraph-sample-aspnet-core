@@ -5,8 +5,9 @@
     <UserSecretsId>7272d1c2-4a64-43d1-855c-6acdd32aa1a0</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Graph" Version="3.12.0" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="0.3.0-preview" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="0.3.0-preview" />
+    <PackageReference Include="Microsoft.Graph" Version="3.18.0" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.1.0" />
   </ItemGroup>
 </Project>
