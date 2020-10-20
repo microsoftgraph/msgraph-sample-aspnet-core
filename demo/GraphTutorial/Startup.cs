@@ -80,7 +80,8 @@ namespace GraphTutorial
                         }
                         catch (ServiceException ex)
                         {
-                            if (ex.IsMatch("ErrorItemNotFound"))
+                            if (ex.IsMatch("ErrorItemNotFound") ||
+                                ex.IsMatch("ConsumerPhotoIsNotSupported"))
                             {
                                 context.Principal.AddUserGraphPhoto(null);
                             }
