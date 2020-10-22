@@ -32,7 +32,7 @@ While the enthusiasm is appreciated, please don't send pull requests to add new 
 
 ## Submitting pull requests
 
-Please submit all pull requests to the `master` branch.
+Please submit all pull requests to the `main` branch.
 
 ## When do changes get published?
 
