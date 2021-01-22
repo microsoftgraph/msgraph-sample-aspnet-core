@@ -35,12 +35,15 @@ namespace GraphTutorial.Controllers
             {
                 var userTimeZone = TZConvert.GetTimeZoneInfo(
                     User.GetUserGraphTimeZone());
-                var startOfWeek = CalendarController.GetUtcStartOfWeekInTimeZone(
+                var startOfWeekUtc = CalendarController.GetUtcStartOfWeekInTimeZone(
                     DateTime.Today, userTimeZone);
 
-                var events = await GetUserWeekCalendar(startOfWeek);
+                var events = await GetUserWeekCalendar(startOfWeekUtc);
 
-                var model = new CalendarViewModel(startOfWeek, events);
+                // Convert UTC start of week to user's time zone for
+                // proper display
+                var startOfWeekInTz = TimeZoneInfo.ConvertTimeFromUtc(startOfWeekUtc, userTimeZone);
+                var model = new CalendarViewModel(startOfWeekInTz, events);
 
                 return View(model);
             }
@@ -146,15 +149,15 @@ namespace GraphTutorial.Controllers
         // </CalendarNewPostSnippet>
 
         // <GetCalendarViewSnippet>
-        private async Task<IList<Event>> GetUserWeekCalendar(DateTime startOfWeek)
+        private async Task<IList<Event>> GetUserWeekCalendar(DateTime startOfWeekUtc)
         {
             // Configure a calendar view for the current week
-            var endOfWeek = startOfWeek.AddDays(7);
+            var endOfWeekUtc = startOfWeekUtc.AddDays(7);
 
             var viewOptions = new List<QueryOption>
             {
-                new QueryOption("startDateTime", startOfWeek.ToString("o")),
-                new QueryOption("endDateTime", endOfWeek.ToString("o"))
+                new QueryOption("startDateTime", startOfWeekUtc.ToString("o")),
+                new QueryOption("endDateTime", endOfWeekUtc.ToString("o"))
             };
 
             var events = await _graphClient.Me

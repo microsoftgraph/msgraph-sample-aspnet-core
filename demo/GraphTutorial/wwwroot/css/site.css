@@ -107,4 +107,8 @@ body {
 .calendar-view-organizer {
   font-size: .75em;
 }
+
+.calendar-view-date-diff {
+  font-size: .75em
+}
 /* </CssSnippet> */

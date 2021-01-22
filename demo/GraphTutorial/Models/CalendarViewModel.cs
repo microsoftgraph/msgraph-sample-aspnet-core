@@ -12,6 +12,7 @@ namespace GraphTutorial.Models
     public class CalendarViewModel
     {
         private DateTime _startOfWeek;
+        private DateTime _endOfWeek;
         private List<CalendarViewEvent> _events;
 
         public CalendarViewModel()
@@ -23,6 +24,7 @@ namespace GraphTutorial.Models
         public CalendarViewModel(DateTime startOfWeek, IEnumerable<Event> events)
         {
             _startOfWeek = startOfWeek;
+            _endOfWeek = startOfWeek.AddDays(7);
             _events = new List<CalendarViewEvent>();
 
             if (events != null)
@@ -114,7 +116,10 @@ namespace GraphTutorial.Models
 
         private IEnumerable<CalendarViewEvent> GetEventsForDay(System.DayOfWeek day)
         {
-            return _events.Where(e => e.Start.DayOfWeek.Equals(day));
+            return _events.Where(e => (e.End > _startOfWeek &&
+                ((e.Start.DayOfWeek.Equals(day) && e.Start >= _startOfWeek) ||
+                 (e.End.DayOfWeek.Equals(day) && e.End < _endOfWeek))));
+
         }
     }
 }
