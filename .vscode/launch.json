@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/demo/GraphTutorial/bin/Debug/netcoreapp3.1/GraphTutorial.dll",
+            "program": "${workspaceFolder}/demo/GraphTutorial/bin/Debug/net5.0/GraphTutorial.dll",
             "args": [],
             "cwd": "${workspaceFolder}/demo/GraphTutorial",
             "stopAtEntry": false,
