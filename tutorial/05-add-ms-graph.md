@@ -76,7 +76,7 @@ Start by creating a new controller for calendar views.
         {
             if (ex.InnerException is MicrosoftIdentityWebChallengeUserException)
             {
-                throw ex;
+                throw;
             }
 
             return new ContentResult {

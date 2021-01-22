@@ -17,7 +17,7 @@ Start by creating an ASP.NET Core web app.
 1. Open your browser and browse to `https://localhost:5001`. If everything is working, you should see a default ASP.NET Core page.
 
 > [!IMPORTANT]
-> If you receive a warning that the certificate for **localhost** is un-trusted you can use the .NET Core CLI to install and trust the development certificate. See [Enforce HTTPS in ASP.NET Core](/aspnet/core/security/enforcing-ssl?view=aspnetcore-3.1) for instructions for specific operating systems.
+> If you receive a warning that the certificate for **localhost** is un-trusted you can use the .NET Core CLI to install and trust the development certificate. See [Enforce HTTPS in ASP.NET Core](/aspnet/core/security/enforcing-ssl?view=aspnetcore-5.0) for instructions for specific operating systems.
 
 ## Add NuGet packages
 
@@ -26,16 +26,14 @@ Before moving on, install some additional NuGet packages that you will use later
 - [Microsoft.Identity.Web](https://www.nuget.org/packages/Microsoft.Identity.Web/) for requesting and managing access tokens.
 - [Microsoft.Identity.Web.MicrosoftGraph](https://www.nuget.org/packages/Microsoft.Identity.Web.MicrosoftGraph/) for adding the Microsoft Graph SDK via dependency injection.
 - [Microsoft.Identity.Web.UI](https://www.nuget.org/packages/Microsoft.Identity.Web.UI/) for sign-in and sign-out UI.
-- [Microsoft.Graph](https://www.nuget.org/packages/Microsoft.Graph/) for making calls to Microsoft Graph.
 - [TimeZoneConverter](https://github.com/mj1856/TimeZoneConverter) for handling time zoned identifiers cross-platform.
 
 1. Run the following commands in your CLI to install the dependencies.
 
     ```Shell
-    dotnet add package Microsoft.Identity.Web --version 1.1.0
-    dotnet add package Microsoft.Identity.MicrosoftGraph --version 1.1.0
-    dotnet add package Microsoft.Identity.Web.UI --version 1.1.0
-    dotnet add package Microsoft.Graph --version 3.18.0
+    dotnet add package Microsoft.Identity.Web --version 1.5.1
+    dotnet add package Microsoft.Identity.Web.MicrosoftGraph --version 1.5.1
+    dotnet add package Microsoft.Identity.Web.UI --version 1.5.1
     dotnet add package TimeZoneConverter
     ```
 

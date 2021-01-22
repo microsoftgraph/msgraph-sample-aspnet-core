@@ -48,7 +48,7 @@ namespace GraphTutorial.Controllers
             {
                 if (ex.InnerException is MicrosoftIdentityWebChallengeUserException)
                 {
-                    throw ex;
+                    throw;
                 }
 
                 return View(new CalendarViewModel())
@@ -121,6 +121,8 @@ namespace GraphTutorial.Controllers
                             Type = AttendeeType.Required
                         });
                     }
+
+                    graphEvent.Attendees = attendeeList;
                 }
             }
 
