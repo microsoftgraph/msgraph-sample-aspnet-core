@@ -201,6 +201,9 @@ Once the user is logged in, you can get their information from Microsoft Graph.
 
     ![A screenshot of the dropdown menu with the Sign Out link](./images/add-aad-auth-02.png)
 
+> [!TIP]
+> If you do not see your user name on the home page and the use avatar dropdown is missing name and email after making these changes, sign out and sign back in.
+
 ## Storing and refreshing tokens
 
 At this point your application has an access token, which is sent in the `Authorization` header of API calls. This is the token that allows the app to access Microsoft Graph on the user's behalf.
