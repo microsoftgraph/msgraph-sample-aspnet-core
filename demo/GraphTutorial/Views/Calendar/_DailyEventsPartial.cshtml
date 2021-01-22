@@ -39,6 +39,14 @@
     }
     <td class="calendar-view-timespan">
       <div>@item.Start.ToString(timeFormat) - @item.End.ToString(timeFormat)</div>
+      @if (item.Start.Date != Model.Day.Date)
+      {
+        <div class="calendar-view-date-diff">Start date: @item.Start.Date.ToShortDateString()</div>
+      }
+      @if (item.End.Date != Model.Day.Date)
+      {
+        <div class="calendar-view-date-diff">End date: @item.End.Date.ToShortDateString()</div>
+      }
     </td>
     <td>
       <div class="calendar-view-subject">@item.Subject</div>
