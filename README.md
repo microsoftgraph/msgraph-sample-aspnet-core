@@ -1,5 +1,7 @@
 # Microsoft Graph sample ASP.NET Core app
 
+[![.NET](https://github.com/microsoftgraph/msgraph-training-aspnet-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/microsoftgraph/msgraph-training-aspnet-core/actions/workflows/dotnet.yml)
+
 This sample demonstrates how to use the Microsoft Graph .NET SDK to access data in Office 365 from ASP.NET Core apps.
 
 > **NOTE:** This sample was originally built from a tutorial published on the [Microsoft Graph tutorials](https://docs.microsoft.com/graph/tutorials) page. That tutorial has been removed.
