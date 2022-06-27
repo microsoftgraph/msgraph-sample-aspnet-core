@@ -1,0 +1,59 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.nav-profile-photo {
+  width: 32px;
+}
+
+.alert-pre {
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.calendar-view-date-cell {
+  width: 150px;
+}
+
+.calendar-view-date {
+  width: 40px;
+  font-size: 36px;
+  line-height: 36px;
+  margin-right: 10px;
+}
+
+.calendar-view-month {
+  font-size: 0.75em;
+}
+
+.calendar-view-timespan {
+  width: 200px;
+}
+
+.calendar-view-subject {
+  font-size: 1.25em;
+}
+
+.calendar-view-organizer {
+  font-size: .75em;
+}
+
+.calendar-view-date-diff {
+  font-size: .75em
+}
