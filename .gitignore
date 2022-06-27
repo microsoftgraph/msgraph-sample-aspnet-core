@@ -353,3 +353,5 @@ MigrationBackup/
 !.vscode/launch.json
 !.vscode/tasks.json
 !.vscode/test.json
+
+*.OLD/

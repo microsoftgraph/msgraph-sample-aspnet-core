@@ -1,11 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-// <CalendarViewModelSnippet>
 using Microsoft.Graph;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace GraphTutorial.Models
 {
@@ -123,4 +119,3 @@ namespace GraphTutorial.Models
         }
     }
 }
-// </CalendarViewModelSnippet>

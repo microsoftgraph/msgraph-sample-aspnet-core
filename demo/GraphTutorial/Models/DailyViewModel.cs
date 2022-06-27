@@ -1,10 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-// <DailyViewModelSnippet>
-using System;
-using System.Collections.Generic;
-
 namespace GraphTutorial.Models
 {
     public class DailyViewModel
@@ -21,4 +17,3 @@ namespace GraphTutorial.Models
         }
     }
 }
-// </DailyViewModelSnippet>

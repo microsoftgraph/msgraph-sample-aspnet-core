@@ -1,17 +1,14 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved.
      Licensed under the MIT License. -->
 
-<!-- <LoginPartialSnippet> -->
-@using GraphTutorial
-
 <ul class="nav navbar-nav">
-@if (User.Identity.IsAuthenticated)
+@if (User.Identity?.IsAuthenticated ?? false)
 {
     <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button">
-            <img src="@User.GetUserGraphPhoto()" class="nav-profile-photo rounded-circle align-self-center mr-2">
+        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">
+            <img src="@User.GetUserGraphPhoto()" class="nav-profile-photo rounded-circle align-self-center me-2">
         </a>
-        <div class="dropdown-menu dropdown-menu-right">
+        <div class="dropdown-menu dropdown-menu-end">
             <h5 class="dropdown-item-text mb-0">@User.GetUserGraphDisplayName()</h5>
             <p class="dropdown-item-text text-muted mb-0">@User.GetUserGraphEmail()</p>
             <div class="dropdown-divider"></div>
@@ -26,4 +23,3 @@ else
     </li>
 }
 </ul>
-<!-- </LoginPartialSnippet> -->

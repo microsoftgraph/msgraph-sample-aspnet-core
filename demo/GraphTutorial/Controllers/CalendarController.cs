@@ -3,12 +3,8 @@
 
 using GraphTutorial.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
 using Microsoft.Graph;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using TimeZoneConverter;
 
 namespace GraphTutorial.Controllers
@@ -26,7 +22,6 @@ namespace GraphTutorial.Controllers
             _logger = logger;
         }
 
-        // <IndexSnippet>
         // Minimum permission scope needed for this view
         [AuthorizeForScopes(Scopes = new[] { "Calendars.Read" })]
         public async Task<IActionResult> Index()
@@ -58,18 +53,14 @@ namespace GraphTutorial.Controllers
                     .WithError("Error getting calendar view", ex.Message);
             }
         }
-        // </IndexSnippet>
 
-        // <CalendarNewGetSnippet>
         // Minimum permission scope needed for this view
         [AuthorizeForScopes(Scopes = new[] { "Calendars.ReadWrite" })]
         public IActionResult New()
         {
             return View();
         }
-        // </CalendarNewGetSnippet>
 
-        // <CalendarNewPostSnippet>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizeForScopes(Scopes = new[] { "Calendars.ReadWrite" })]
@@ -146,9 +137,7 @@ namespace GraphTutorial.Controllers
                     .WithError("Error creating event", ex.Error.Message);
             }
         }
-        // </CalendarNewPostSnippet>
 
-        // <GetCalendarViewSnippet>
         private async Task<IList<Event>> GetUserWeekCalendar(DateTime startOfWeekUtc)
         {
             // Configure a calendar view for the current week
@@ -216,6 +205,5 @@ namespace GraphTutorial.Controllers
             // convert to UTC
             return TimeZoneInfo.ConvertTimeToUtc(unspecifiedStart, timeZone);
         }
-        // </GetCalendarViewSnippet>
     }
 }

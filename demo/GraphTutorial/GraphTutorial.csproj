@@ -1,15 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <UserSecretsId>6a919def-39b0-4408-85c2-d6f423c70df5</UserSecretsId>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>631dcab3-8851-478e-94b4-51ab1e5080fe</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Identity.Web" Version="1.5.1" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.5.1" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.5.1" />
-    <PackageReference Include="TimeZoneConverter" Version="3.3.0" />
+    <PackageReference Include="Microsoft.Graph" Version="4.32.0" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.25.1" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.25.1" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.25.1" />
+    <PackageReference Include="TimeZoneConverter" Version="5.0.0" />
   </ItemGroup>
 
 </Project>

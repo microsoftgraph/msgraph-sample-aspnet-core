@@ -1,9 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-// <CalendarViewEventSnippet>
 using Microsoft.Graph;
-using System;
 
 namespace GraphTutorial.Models
 {
@@ -23,4 +21,3 @@ namespace GraphTutorial.Models
         }
     }
 }
-// </CalendarViewEventSnippet>
