@@ -12,7 +12,7 @@ languages:
 
 # Microsoft Graph sample ASP.NET Core app
 
-[![.NET](https://github.com/microsoftgraph/msgraph-training-aspnet-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/microsoftgraph/msgraph-training-aspnet-core/actions/workflows/dotnet.yml) ![License.](https://img.shields.io/badge/license-MIT-green.svg)
+[![.NET](https://github.com/microsoftgraph/msgraph-sample-aspnet-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/microsoftgraph/msgraph-sample-aspnet-core/actions/workflows/dotnet.yml) ![License.](https://img.shields.io/badge/license-MIT-green.svg)
 
 This sample demonstrates how to use the Microsoft Graph .NET SDK to access data in Office 365 from ASP.NET Core apps.
 
