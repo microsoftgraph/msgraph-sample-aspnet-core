@@ -68,6 +68,7 @@ builder.Services
             catch (ServiceException ex)
             {
                 if (ex.IsMatch("ErrorItemNotFound") ||
+                    ex.IsMatch("ImageNotFound") ||
                     ex.IsMatch("ConsumerPhotoIsNotSupported"))
                 {
                     context.Principal?.AddUserGraphPhoto(null);
