@@ -29,7 +29,7 @@ namespace GraphTutorial.Controllers
             try
             {
                 var userTimeZone = TZConvert.GetTimeZoneInfo(
-                    User.GetUserGraphTimeZone());
+                    User.GetUserGraphTimeZone() ?? "UTC");
                 var startOfWeekUtc = CalendarController.GetUtcStartOfWeekInTimeZone(
                     DateTime.Today, userTimeZone);
 

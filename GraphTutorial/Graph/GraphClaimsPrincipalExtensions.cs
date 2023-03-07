@@ -16,27 +16,27 @@ public static class GraphClaimTypes {
 // the claims principal
 public static class GraphClaimsPrincipalExtensions
 {
-    public static string GetUserGraphDisplayName(this ClaimsPrincipal claimsPrincipal)
+    public static string? GetUserGraphDisplayName(this ClaimsPrincipal claimsPrincipal)
     {
         return claimsPrincipal.FindFirstValue(GraphClaimTypes.DisplayName);
     }
 
-    public static string GetUserGraphEmail(this ClaimsPrincipal claimsPrincipal)
+    public static string? GetUserGraphEmail(this ClaimsPrincipal claimsPrincipal)
     {
         return claimsPrincipal.FindFirstValue(GraphClaimTypes.Email);
     }
 
-    public static string GetUserGraphPhoto(this ClaimsPrincipal claimsPrincipal)
+    public static string? GetUserGraphPhoto(this ClaimsPrincipal claimsPrincipal)
     {
         return claimsPrincipal.FindFirstValue(GraphClaimTypes.Photo);
     }
 
-    public static string GetUserGraphTimeZone(this ClaimsPrincipal claimsPrincipal)
+    public static string? GetUserGraphTimeZone(this ClaimsPrincipal claimsPrincipal)
     {
         return claimsPrincipal.FindFirstValue(GraphClaimTypes.TimeZone);
     }
 
-    public static string GetUserGraphTimeFormat(this ClaimsPrincipal claimsPrincipal)
+    public static string? GetUserGraphTimeFormat(this ClaimsPrincipal claimsPrincipal)
     {
         return claimsPrincipal.FindFirstValue(GraphClaimTypes.TimeFormat);
     }
