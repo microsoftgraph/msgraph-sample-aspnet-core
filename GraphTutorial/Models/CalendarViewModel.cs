@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-using Microsoft.Graph;
+using Microsoft.Graph.Models;
 
 namespace GraphTutorial.Models
 {

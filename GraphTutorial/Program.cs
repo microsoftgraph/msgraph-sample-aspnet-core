@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using System.Net;
-using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -10,6 +9,7 @@ using Microsoft.Graph;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.Kiota.Abstractions.Authentication;
 
 var builder = Microsoft.AspNetCore.Builder.WebApplication.CreateBuilder(args);
 
@@ -33,23 +33,21 @@ builder.Services
                 .GetRequiredService<ITokenAcquisition>();
 
             var graphClient = new GraphServiceClient(
-                new DelegateAuthenticationProvider(async (request) => {
-                    var token = await tokenAcquisition
-                        .GetAccessTokenForUserAsync(GraphConstants.Scopes, user:context.Principal);
-                    request.Headers.Authorization =
-                        new AuthenticationHeaderValue("Bearer", token);
-                })
+                new BaseBearerTokenAuthenticationProvider(
+                    new TokenAcquisitionTokenProvider(
+                        tokenAcquisition,
+                        GraphConstants.Scopes,
+                        context.Principal)
+                )
             );
 
             // Get user information from Graph
-            var user = await graphClient.Me.Request()
-                .Select(u => new {
-                    u.DisplayName,
-                    u.Mail,
-                    u.UserPrincipalName,
-                    u.MailboxSettings
-                })
-                .GetAsync();
+            var user = await graphClient.Me
+                .GetAsync(config =>
+                {
+                    config.QueryParameters.Select =
+                        new[] { "displayName", "mail", "mailboxSettings", "userPrincipalName" };
+                });
 
             context.Principal?.AddUserGraphInfo(user);
 
@@ -60,7 +58,6 @@ builder.Services
                 var photo = await graphClient.Me
                     .Photos["48x48"]
                     .Content
-                    .Request()
                     .GetAsync();
 
                 context.Principal?.AddUserGraphPhoto(photo);

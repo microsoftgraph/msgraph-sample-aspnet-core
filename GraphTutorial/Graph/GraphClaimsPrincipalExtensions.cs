@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-using Microsoft.Graph;
+using Microsoft.Graph.Models;
 using System.Security.Claims;
 
 public static class GraphClaimTypes {
@@ -41,27 +41,29 @@ public static class GraphClaimsPrincipalExtensions
         return claimsPrincipal.FindFirstValue(GraphClaimTypes.TimeFormat);
     }
 
-    public static void AddUserGraphInfo(this ClaimsPrincipal claimsPrincipal, User user)
+    public static void AddUserGraphInfo(this ClaimsPrincipal claimsPrincipal, User? user)
     {
+        if (user == null)
+        {
+            return;
+        }
+
         var identity = claimsPrincipal.Identity as ClaimsIdentity;
         if (identity == null) throw new Exception("bah");
 
         identity.AddClaim(
-            new Claim(GraphClaimTypes.DisplayName, user.DisplayName));
+            new Claim(GraphClaimTypes.DisplayName, user.DisplayName ?? string.Empty));
         identity.AddClaim(
             new Claim(GraphClaimTypes.Email,
-                user.Mail ?? user.UserPrincipalName));
+                user.Mail ?? user.UserPrincipalName ?? string.Empty));
         // If not set, default to UTC
-        var userTimeZone = string.IsNullOrEmpty(user.MailboxSettings.TimeZone) ? "UTC" :
-            user.MailboxSettings.TimeZone;
         identity.AddClaim(
             new Claim(GraphClaimTypes.TimeZone,
-                userTimeZone));
+                user.MailboxSettings?.TimeZone ?? "UTC"));
         // If not set, default to HH:mm
-        var userTimeFormat = string.IsNullOrEmpty(user.MailboxSettings.TimeFormat) ? "HH:mm" :
-            user.MailboxSettings.TimeFormat;
         identity.AddClaim(
-            new Claim(GraphClaimTypes.TimeFormat, userTimeFormat));
+            new Claim(GraphClaimTypes.TimeFormat,
+                user.MailboxSettings?.TimeFormat ?? "HH:mm"));
     }
 
     public static void AddUserGraphPhoto(this ClaimsPrincipal claimsPrincipal, Stream? photoStream)

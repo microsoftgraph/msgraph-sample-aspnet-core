@@ -5,6 +5,8 @@ using GraphTutorial.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using Microsoft.Graph;
+using Microsoft.Graph.Models;
+using Microsoft.Graph.Models.ODataErrors;
 using TimeZoneConverter;
 
 namespace GraphTutorial.Controllers
@@ -124,17 +126,16 @@ namespace GraphTutorial.Controllers
             {
                 // Add the event
                 await _graphClient.Me.Events
-                    .Request()
-                    .AddAsync(graphEvent);
+                    .PostAsync(graphEvent);
 
                 // Redirect to the calendar view with a success message
                 return RedirectToAction("Index").WithSuccess("Event created");
             }
-            catch (ServiceException ex)
+            catch (ODataError ex)
             {
                 // Redirect to the calendar view with an error message
                 return RedirectToAction("Index")
-                    .WithError("Error creating event", ex.Error.Message);
+                    .WithError("Error creating event", ex.Error?.Message);
             }
         }
 
@@ -143,44 +144,42 @@ namespace GraphTutorial.Controllers
             // Configure a calendar view for the current week
             var endOfWeekUtc = startOfWeekUtc.AddDays(7);
 
-            var viewOptions = new List<QueryOption>
-            {
-                new QueryOption("startDateTime", startOfWeekUtc.ToString("o")),
-                new QueryOption("endDateTime", endOfWeekUtc.ToString("o"))
-            };
-
             var events = await _graphClient.Me
                 .CalendarView
-                .Request(viewOptions)
-                // Send user time zone in request so date/time in
-                // response will be in preferred time zone
-                .Header("Prefer", $"outlook.timezone=\"{User.GetUserGraphTimeZone()}\"")
-                // Get max 50 per request
-                .Top(50)
-                // Only return fields app will use
-                .Select(e => new
+                .GetAsync(config =>
                 {
-                    e.Subject,
-                    e.Organizer,
-                    e.Start,
-                    e.End
-                })
-                // Order results chronologically
-                .OrderBy("start/dateTime")
-                .GetAsync();
+                    // Send user time zone in request so date/time in
+                    // response will be in preferred time zone
+                    config.Headers.Add("Prefer", $"outlook.timezone=\"{User.GetUserGraphTimeZone()}\"");
+                    // Configure a calendar view for the current week
+                    config.QueryParameters.StartDateTime = startOfWeekUtc.ToString("o");
+                    config.QueryParameters.EndDateTime = endOfWeekUtc.ToString("o");
+                    // Get max 50 per request
+                    config.QueryParameters.Top = 50;
+                    // Only return fields app will use
+                    config.QueryParameters.Select = new[] {"subject", "organizer", "start", "end" };
+                    // Order results chronologically
+                    config.QueryParameters.Orderby = new[] { "start/dateTime" };
+                });
 
             IList<Event> allEvents;
             // Handle case where there are more than 50
-            if (events.NextPageRequest != null)
+            if (!string.IsNullOrEmpty(events?.OdataNextLink))
             {
                 allEvents = new List<Event>();
                 // Create a page iterator to iterate over subsequent pages
                 // of results. Build a list from the results
-                var pageIterator = PageIterator<Event>.CreatePageIterator(
+                var pageIterator = PageIterator<Event, EventCollectionResponse>.CreatePageIterator(
                     _graphClient, events,
-                    (e) => {
+                    (e) =>
+                    {
                         allEvents.Add(e);
                         return true;
+                    },
+                    (req) =>
+                    {
+                        req.Headers.Add("Prefer", $"outlook.timezone=\"{User.GetUserGraphTimeZone()}\"");
+                        return req;
                     }
                 );
                 await pageIterator.IterateAsync();
@@ -188,7 +187,7 @@ namespace GraphTutorial.Controllers
             else
             {
                 // If only one page, just use the result
-                allEvents = events.CurrentPage;
+                allEvents = events?.Value ?? new List<Event>();
             }
 
             return allEvents;
