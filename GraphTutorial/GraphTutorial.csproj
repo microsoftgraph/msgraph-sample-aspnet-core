@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Graph" Version="4.54.0" />
     <PackageReference Include="Microsoft.Identity.Web" Version="2.13.4" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="2.13.4" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="2.14.0" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.13.4" />
     <PackageReference Include="TimeZoneConverter" Version="6.1.0" />
   </ItemGroup>
