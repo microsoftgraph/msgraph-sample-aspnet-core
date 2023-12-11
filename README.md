@@ -3,7 +3,6 @@ page_type: sample
 description: This sample demonstrates how to use the Microsoft Graph .NET SDK to access data in Office 365 from ASP.NET Core apps.
 products:
 - ms-graph
-- microsoft-graph-calendar-api
 - office-exchange-online
 languages:
 - csharp
@@ -16,7 +15,8 @@ languages:
 
 This sample demonstrates how to use the Microsoft Graph .NET SDK to access data in Office 365 from ASP.NET Core apps.
 
-> **NOTE:** This sample was originally built from a tutorial published on the [Microsoft Graph tutorials](https://docs.microsoft.com/graph/tutorials) page. That tutorial has been removed.
+> [!NOTE]
+> This sample was originally built from a tutorial published on the [Microsoft Graph tutorials](https://docs.microsoft.com/graph/tutorials) page. That tutorial has been removed.
 
 ## Prerequisites
 
@@ -54,7 +54,7 @@ If you don't have a Microsoft account, there are a couple of options to get a fr
 
 1. Copy the client secret value before you leave this page. You will need it in the next step.
 
-    > **IMPORTANT**
+    > [!IMPORTANT]
     > This client secret is never shown again, so make sure you copy it now.
 
 ## Configure the sample

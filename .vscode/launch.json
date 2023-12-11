@@ -13,6 +13,8 @@
             "program": "${workspaceFolder}/GraphTutorial/bin/Debug/net7.0/GraphTutorial.dll",
             "args": [],
             "cwd": "${workspaceFolder}/GraphTutorial",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
             "stopAtEntry": false,
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             "serverReadyAction": {
