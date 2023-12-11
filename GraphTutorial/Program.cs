@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
 using System.Net;
@@ -15,8 +15,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure authentication
 builder.Services
+
     // Use OpenId authentication
     .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+
     // Specify this is a web app and needs auth code flow
     .AddMicrosoftIdentityWebApp(options =>
     {
@@ -37,16 +39,14 @@ builder.Services
                     new TokenAcquisitionTokenProvider(
                         tokenAcquisition,
                         GraphConstants.Scopes,
-                        context.Principal)
-                )
-            );
+                        context.Principal)));
 
             // Get user information from Graph
             var user = await graphClient.Me
                 .GetAsync(config =>
                 {
                     config.QueryParameters.Select =
-                        new[] { "displayName", "mail", "mailboxSettings", "userPrincipalName" };
+                        ["displayName", "mail", "mailboxSettings", "userPrincipalName"];
                 });
 
             context.Principal?.AddUserGraphInfo(user);
@@ -100,16 +100,22 @@ builder.Services
             return Task.FromResult(0);
         };
     })
+
     // Add ability to call web API (Graph)
     // and get access tokens
-    .EnableTokenAcquisitionToCallDownstreamApi(options =>
-    {
-        builder.Configuration.Bind("AzureAd", options);
-    }, GraphConstants.Scopes)
+    .EnableTokenAcquisitionToCallDownstreamApi(
+        options =>
+        {
+            builder.Configuration.Bind("AzureAd", options);
+        },
+        GraphConstants.Scopes)
+
     // Add a GraphServiceClient via dependency injection
-    .AddMicrosoftGraph(options => {
+    .AddMicrosoftGraph(options =>
+    {
         options.Scopes = GraphConstants.Scopes;
     })
+
     // Use in-memory token cache
     // See https://github.com/AzureAD/microsoft-identity-web/wiki/token-cache-serialization
     .AddInMemoryTokenCaches();
@@ -123,6 +129,7 @@ builder.Services
             .Build();
         options.Filters.Add(new AuthorizeFilter(policy));
     })
+
     // Add the Microsoft Identity UI pages for sign in/out
     .AddMicrosoftIdentityUI();
 
@@ -132,7 +139,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
