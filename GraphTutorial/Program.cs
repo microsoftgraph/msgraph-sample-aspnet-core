@@ -11,7 +11,7 @@ using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Kiota.Abstractions.Authentication;
 
-var builder = Microsoft.AspNetCore.Builder.WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 // Configure authentication
 builder.Services
@@ -108,7 +108,7 @@ builder.Services
     }, GraphConstants.Scopes)
     // Add a GraphServiceClient via dependency injection
     .AddMicrosoftGraph(options => {
-        options.Scopes = string.Join(' ', GraphConstants.Scopes);
+        options.Scopes = GraphConstants.Scopes;
     })
     // Use in-memory token cache
     // See https://github.com/AzureAD/microsoft-identity-web/wiki/token-cache-serialization
