@@ -1,36 +1,50 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
 using GraphTutorial.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web;
 using Microsoft.Graph;
+using Microsoft.Graph.Models;
+using Microsoft.Graph.Models.ODataErrors;
+using Microsoft.Identity.Web;
 using TimeZoneConverter;
 
 namespace GraphTutorial.Controllers
 {
+    /// <summary>
+    /// The controller for the calendar views.
+    /// </summary>
     public class CalendarController : Controller
     {
-        private readonly GraphServiceClient _graphClient;
-        private readonly ILogger<HomeController> _logger;
+        private readonly GraphServiceClient graphClient;
+        private readonly ILogger<HomeController> logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CalendarController"/> class.
+        /// </summary>
+        /// <param name="graphClient">An authenticated <see cref="GraphServiceClient"/>.</param>
+        /// <param name="logger">An <see cref="ILogger"/> to use for logging.</param>
         public CalendarController(
             GraphServiceClient graphClient,
             ILogger<HomeController> logger)
         {
-            _graphClient = graphClient;
-            _logger = logger;
+            this.graphClient = graphClient;
+            this.logger = logger;
         }
 
-        // Minimum permission scope needed for this view
-        [AuthorizeForScopes(Scopes = new[] { "Calendars.Read" })]
+        /// <summary>
+        /// Loads the default view.
+        /// </summary>
+        /// <returns>A view of the current week's calendar.</returns>
+        [AuthorizeForScopes(Scopes =
+            ["Calendars.Read"])]
         public async Task<IActionResult> Index()
         {
             try
             {
                 var userTimeZone = TZConvert.GetTimeZoneInfo(
                     User.GetUserGraphTimeZone() ?? "UTC");
-                var startOfWeekUtc = CalendarController.GetUtcStartOfWeekInTimeZone(
+                var startOfWeekUtc = GetUtcStartOfWeekInTimeZone(
                     DateTime.Today, userTimeZone);
 
                 var events = await GetUserWeekCalendar(startOfWeekUtc);
@@ -54,16 +68,26 @@ namespace GraphTutorial.Controllers
             }
         }
 
-        // Minimum permission scope needed for this view
-        [AuthorizeForScopes(Scopes = new[] { "Calendars.ReadWrite" })]
+        /// <summary>
+        /// Loads the new event form.
+        /// </summary>
+        /// <returns>The form.</returns>
+        [AuthorizeForScopes(Scopes =
+            ["Calendars.ReadWrite"])]
         public IActionResult New()
         {
             return View();
         }
 
+        /// <summary>
+        /// Accepts the data from the new event form when submitted and creates the new event.
+        /// </summary>
+        /// <param name="newEvent">The <see cref="NewEvent"/> instance with values from the form.</param>
+        /// <returns>A redirect to the calendar view with the results.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AuthorizeForScopes(Scopes = new[] { "Calendars.ReadWrite" })]
+        [AuthorizeForScopes(Scopes =
+            ["Calendars.ReadWrite"])]
         public async Task<IActionResult> New([Bind("Subject,Attendees,Start,End,Body")] NewEvent newEvent)
         {
             var timeZone = User.GetUserGraphTimeZone();
@@ -75,15 +99,15 @@ namespace GraphTutorial.Controllers
                 Start = new DateTimeTimeZone
                 {
                     DateTime = newEvent.Start.ToString("o"),
+
                     // Use the user's time zone
-                    TimeZone = timeZone
+                    TimeZone = timeZone,
                 },
                 End = new DateTimeTimeZone
                 {
                     DateTime = newEvent.End.ToString("o"),
-                    // Use the user's time zone
-                    TimeZone = timeZone
-                }
+                    TimeZone = timeZone,
+                },
             };
 
             // Add body if present
@@ -92,7 +116,7 @@ namespace GraphTutorial.Controllers
                 graphEvent.Body = new ItemBody
                 {
                     ContentType = BodyType.Text,
-                    Content = newEvent.Body
+                    Content = newEvent.Body,
                 };
             }
 
@@ -107,12 +131,13 @@ namespace GraphTutorial.Controllers
                     var attendeeList = new List<Attendee>();
                     foreach (var attendee in attendees)
                     {
-                        attendeeList.Add(new Attendee{
+                        attendeeList.Add(new Attendee
+                        {
                             EmailAddress = new EmailAddress
                             {
-                                Address = attendee
+                                Address = attendee,
                             },
-                            Type = AttendeeType.Required
+                            Type = AttendeeType.Required,
                         });
                     }
 
@@ -123,19 +148,30 @@ namespace GraphTutorial.Controllers
             try
             {
                 // Add the event
-                await _graphClient.Me.Events
-                    .Request()
-                    .AddAsync(graphEvent);
+                await graphClient.Me.Events
+                    .PostAsync(graphEvent);
 
                 // Redirect to the calendar view with a success message
                 return RedirectToAction("Index").WithSuccess("Event created");
             }
-            catch (ServiceException ex)
+            catch (ODataError ex)
             {
                 // Redirect to the calendar view with an error message
                 return RedirectToAction("Index")
-                    .WithError("Error creating event", ex.Error.Message);
+                    .WithError("Error creating event", ex.Error?.Message);
             }
+        }
+
+        private static DateTime GetUtcStartOfWeekInTimeZone(DateTime today, TimeZoneInfo timeZone)
+        {
+            // Assumes Sunday as first day of week
+            int diff = DayOfWeek.Sunday - today.DayOfWeek;
+
+            // create date as unspecified kind
+            var unspecifiedStart = DateTime.SpecifyKind(today.AddDays(diff), DateTimeKind.Unspecified);
+
+            // convert to UTC
+            return TimeZoneInfo.ConvertTimeToUtc(unspecifiedStart, timeZone);
         }
 
         private async Task<IList<Event>> GetUserWeekCalendar(DateTime startOfWeekUtc)
@@ -143,67 +179,61 @@ namespace GraphTutorial.Controllers
             // Configure a calendar view for the current week
             var endOfWeekUtc = startOfWeekUtc.AddDays(7);
 
-            var viewOptions = new List<QueryOption>
-            {
-                new QueryOption("startDateTime", startOfWeekUtc.ToString("o")),
-                new QueryOption("endDateTime", endOfWeekUtc.ToString("o"))
-            };
-
-            var events = await _graphClient.Me
+            var events = await graphClient.Me
                 .CalendarView
-                .Request(viewOptions)
-                // Send user time zone in request so date/time in
-                // response will be in preferred time zone
-                .Header("Prefer", $"outlook.timezone=\"{User.GetUserGraphTimeZone()}\"")
-                // Get max 50 per request
-                .Top(50)
-                // Only return fields app will use
-                .Select(e => new
+                .GetAsync(config =>
                 {
-                    e.Subject,
-                    e.Organizer,
-                    e.Start,
-                    e.End
-                })
-                // Order results chronologically
-                .OrderBy("start/dateTime")
-                .GetAsync();
+                    // Send user time zone in request so date/time in
+                    // response will be in preferred time zone
+                    config.Headers.Add("Prefer", $"outlook.timezone=\"{User.GetUserGraphTimeZone()}\"");
+
+                    // Configure a calendar view for the current week
+                    config.QueryParameters.StartDateTime = startOfWeekUtc.ToString("o");
+                    config.QueryParameters.EndDateTime = endOfWeekUtc.ToString("o");
+
+                    // Get max 50 per request
+                    config.QueryParameters.Top = 50;
+
+                    // Only return fields app will use
+                    config.QueryParameters.Select =
+                        ["subject", "organizer", "start", "end"];
+
+                    // Order results chronologically
+                    config.QueryParameters.Orderby =
+                        ["start/dateTime"];
+                });
 
             IList<Event> allEvents;
+
             // Handle case where there are more than 50
-            if (events.NextPageRequest != null)
+            if (!string.IsNullOrEmpty(events?.OdataNextLink))
             {
                 allEvents = new List<Event>();
+
                 // Create a page iterator to iterate over subsequent pages
                 // of results. Build a list from the results
-                var pageIterator = PageIterator<Event>.CreatePageIterator(
-                    _graphClient, events,
-                    (e) => {
+                var pageIterator = PageIterator<Event, EventCollectionResponse>.CreatePageIterator(
+                    graphClient,
+                    events,
+                    (e) =>
+                    {
                         allEvents.Add(e);
                         return true;
-                    }
-                );
+                    },
+                    (req) =>
+                    {
+                        req.Headers.Add("Prefer", $"outlook.timezone=\"{User.GetUserGraphTimeZone()}\"");
+                        return req;
+                    });
                 await pageIterator.IterateAsync();
             }
             else
             {
                 // If only one page, just use the result
-                allEvents = events.CurrentPage;
+                allEvents = events?.Value ?? new List<Event>();
             }
 
             return allEvents;
-        }
-
-        private static DateTime GetUtcStartOfWeekInTimeZone(DateTime today, TimeZoneInfo timeZone)
-        {
-            // Assumes Sunday as first day of week
-            int diff = System.DayOfWeek.Sunday - today.DayOfWeek;
-
-            // create date as unspecified kind
-            var unspecifiedStart = DateTime.SpecifyKind(today.AddDays(diff), DateTimeKind.Unspecified);
-
-            // convert to UTC
-            return TimeZoneInfo.ConvertTimeToUtc(unspecifiedStart, timeZone);
         }
     }
 }
